@@ -1,0 +1,22 @@
+agent = "claude"
+default = "ask"
+audit = ".adversarial/audit.jsonl"
+
+[[rules]]
+name = "deny-env-read"
+tool = "read_file"
+decision = "deny"
+[rules.match.regex]
+path = '(?i)(^|/)(\.env(\..*)?|\.ssh(/.*)?|credentials(\..*)?|authorized_keys|id_rsa|id_ed25519|\.aws/credentials)$'
+
+[[rules]]
+name = "allow-file-read"
+tool = "read_file"
+decision = "allow"
+
+[[rules]]
+name = "deny-destructive-sql"
+tool = "run_sql"
+decision = "deny"
+[rules.match]
+sql_verbs = ["drop", "delete", "truncate", "alter", "grant"]

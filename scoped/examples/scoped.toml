@@ -1,0 +1,34 @@
+agent = "claude"
+default = "ask"
+audit = ".demo/audit.jsonl"
+
+[[rules]]
+name = "deny-secret-paths"
+tool = "read_file"
+decision = "deny"
+[rules.match.regex]
+path = '(?i)(^|/)(\.env(\..*)?|\.ssh(/.*)?|credentials(\..*)?|authorized_keys|id_rsa|id_ed25519|\.aws/credentials)$'
+
+[[rules]]
+name = "allow-file-read"
+tool = "read_file"
+decision = "allow"
+
+[[rules]]
+name = "deny-destructive-sql"
+tool = "run_sql"
+decision = "deny"
+[rules.match]
+sql_verbs = ["drop", "delete", "truncate", "alter", "grant"]
+
+[[rules]]
+name = "allow-select"
+tool = "run_sql"
+decision = "allow"
+[rules.match]
+sql_verbs = ["select"]
+
+[[rules]]
+name = "ask-shell"
+tool = "shell"
+decision = "ask"
