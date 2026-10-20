@@ -52,7 +52,7 @@
 **为什么现在（证据）**：
 - Agent Skills 为开放标准（agentskills.io，Anthropic 主导，Apache-2.0）；Claude Code、Cursor 2.4+、Codex CLI、Cline、Antigravity、Gemini CLI 全部原生读 SKILL.md（mcp.directory，2026-05-04）。
 - 最准一句：**"The skill format is already portable; the behavior is not."**（eyeinthesky6/codex-coordinator 架构 review，2026-07-23——skills CLI 能把 skill 拷进 Claude Code，但 task identity、claims、hooks、delegation 全无映射）。
-- Get Claude Skills（2026-04-28）：同格式、不同激活与副作用；Codex GPS：会话中途新增 skill 不生效。
+- Get Claude Skills（2026-04-28）：同格式、不同激活与副作用；Codex 特例：会话中途新增 skill 不生效。
 - 行为差异清单已有实据：`$skill` 显式调用仅 Codex；allowed-tools 仍两家实现；Codex 有 openai.yaml sidecar；路径协议有三套（.claude/.codex/.agents/skills/）。
 
 **竞争**：chriscox/agent-skills（多目标 install.sh）、agile-skills 的 CODEX_COMPATIBILITY.md、camoa/claude-skills 的 PORTABILITY.md——全部是手工文档或安装脚本，无自动化 conformance 测试。
@@ -75,7 +75,7 @@
 - 终端 agent / skill 大合集：无行为差异位。
 
 **对自己两个最高分的反方（预注册）**：
-- 反 #3：oracle 问题不解决，外部状态对比也会退化成大号 `assert`；接入长尾可能先被 harness 原生 hooks 夺位。对策：只做 top-5 目标类型（git / ticket / SQL / sqlite / http），明确不做通用水性框架。
+- 反 #3：oracle 问题不解决，外部状态对比也会退化成大号 `assert`；接入长尾可能先被 harness 原生 hooks 夺位。对策：只做 top-5 目标类型（git / ticket / SQL / sqlite / http），明确不做通用验收框架。
 - 反 #6：见其风险段——我愿自我降位。
 
 **对 #8 的修订**：如 dossier 内所列，候选降级并入 #2。
