@@ -23,26 +23,35 @@ MAILROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__
 TYPES = ("ASK", "ACK", "INFO", "ERROR")
 
 
+AGENTS = ("echo1", "echo2")
+
+
 def inbox_path(agent):
     return os.path.join(MAILROOT, agent)
 
 
+def _valid_id(mid):
+    return mid and "/" not in mid and ".." not in mid and not mid.startswith(".")
+
+
 def list_ids(agent, include_done=False):
+    """返回 [(id, done_flag)]，已办消息从 <agent>/done/ 下合并，按 id（时间前缀）排序。"""
     inf = inbox_path(agent)
     if not os.path.isdir(inf):
         return []
-    ids = sorted(f[:-5] for f in os.listdir(inf) if f.endswith(".json"))
+    rows = [(f[:-5], False) for f in os.listdir(inf) if f.endswith(".json")]
     if include_done:
-        return ids
-    return [i for i in ids if not _acked(agent, i)]
-
-
-def _acked(agent, mid):
-    return os.path.exists(os.path.join(inbox_path(agent), "done", mid + ".json"))
+        done = os.path.join(inf, "done")
+        if os.path.isdir(done):
+            rows += [(f[:-5], True) for f in os.listdir(done) if f.endswith(".json")]
+    return sorted(rows)
 
 
 def read_msg(agent, mid):
-    with open(os.path.join(inbox_path(agent), mid + ".json"), encoding="utf-8") as f:
+    path = os.path.join(inbox_path(agent), mid + ".json")
+    if not os.path.exists(path):
+        path = os.path.join(inbox_path(agent), "done", mid + ".json")
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -62,19 +71,19 @@ def cmd_send(a):
 
 
 def cmd_poll(a):
-    for mid in list_ids(a.me, include_done=a.all):
+    rows = list_ids(a.me, include_done=a.all)
+    for mid, done in rows:
         m = read_msg(a.me, mid)
-        flag = "D" if _acked(a.me, mid) else "U"
-        print(f"[{flag}] {m['id']}  {m['ts']}  {m['from']}/{m['type']}"
+        print(f"[{'D' if done else 'U'}] {m['id']}  {m['ts']}  {m['from']}/{m['type']}"
               + (f" re:{m['reply_to']}" if m['reply_to'] else ""))
         print(f"    {m['body']}")
-    n = len(list_ids(a.me))
-    sys.stderr.write(f"{n} unread, {len(list_ids(a.me, True)) - n} done\n")
+    n_unread = sum(1 for _, d in rows if not d)
+    sys.stderr.write(f"{n_unread} unread, {len(rows) - n_unread} done\n")
 
 
 def cmd_wait(a):
     deadline = time.time() + a.timeout
-    while not list_ids(a.me):
+    while not [r for r in list_ids(a.me) if not r[1]]:
         if time.time() > deadline:
             sys.stderr.write("timeout\n")
             return 1
@@ -83,21 +92,33 @@ def cmd_wait(a):
 
 
 def cmd_ack(a):
+    if not _valid_id(a.mid):
+        sys.stderr.write(f"invalid id: {a.mid}\n")
+        return 2
     inf = inbox_path(a.me)
+    src = os.path.join(inf, a.mid + ".json")
+    if not os.path.exists(src):
+        if os.path.exists(os.path.join(inf, "done", a.mid + ".json")):
+            print(f"already acked {a.mid}")
+            return 0
+        sys.stderr.write(f"no such message: {a.mid}\n")
+        return 2
     os.makedirs(os.path.join(inf, "done"), exist_ok=True)
-    os.rename(os.path.join(inf, a.mid + ".json"), os.path.join(inf, "done", a.mid + ".json"))
+    os.rename(src, os.path.join(inf, "done", a.mid + ".json"))
     print(f"acked {a.mid}")
 
 
 def cmd_status(a):
-    print(f"{a.me}: {len(list_ids(a.me))} unread, {len(list_ids(a.me, True))} total")
+    rows = list_ids(a.me, include_done=True)
+    n_unread = sum(1 for _, d in rows if not d)
+    print(f"{a.me}: {n_unread} unread, {len(rows) - n_unread} done (total {len(rows)})")
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = p.add_subparsers(dest="cmd", required=True)
-    s = sub.add_parser("send"); s.add_argument("--from", dest="me", required=True)
-    s.add_argument("--to", required=True); s.add_argument("--type", default="INFO",
+    s = sub.add_parser("send"); s.add_argument("--from", dest="me", required=True, choices=AGENTS)
+    s.add_argument("--to", required=True, choices=AGENTS); s.add_argument("--type", default="INFO",
         choices=TYPES); s.add_argument("--reply-to", default=""); s.add_argument("--body", required=True)
     s.set_defaults(fn=cmd_send)
     s = sub.add_parser("poll"); s.add_argument("me"); s.add_argument("--all", action="store_true")
