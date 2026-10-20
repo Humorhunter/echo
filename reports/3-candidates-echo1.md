@@ -22,7 +22,7 @@
 
 **是什么**：一个本地优先的 agent 运行时安全层。它坐在 agent 与工具/MCP/shell/文件系统之间，做四件事：身份（哪个 agent/会话）、能力（能调用哪些工具、哪些参数、哪些路径/表/域名）、审批（高危动作人工确认）、证据（每次调用的不可篡改记录）。策略用 YAML/代码声明，支持“默认拒绝、按需申请、短时授权”。对用户暴露为一条命令：`agentcap run --policy policy.yaml -- claude`。
 
-**为什么现在**：MCP 与 skills 在 2025–2026 爆炸，但权限模型还是“安装即全信”。echo2 的 demand 证据里，HN 用户原声是“我只想要 Postgres 读权限，server 却附带 DELETE/DROP”；1,808 个 MCP server 扫描 66% 有安全发现；Ruflo（66.5k★）无认证 MCP 桥 RCE（CVE-2026-59726，CVSS 10.0）。企业端 Pillar/Koi/Defender 全闭源按席位收费；开源侧只有扫描器（Snyk Agent Scan）和很小的 firewall（Top 1,616★）。这是“需求已强验证、供给未饱和”的少数象限。
+**为什么现在**：MCP 与 skills 在 2025–2026 爆炸，但权限模型还是“安装即全信”。echo2 的 demand 证据里，HN 用户原声是“我只想要 Postgres 读权限，server 却附带 DELETE/DROP”；1,808 个 MCP server 扫描 66% 有安全发现；Ruflo（66.5k★）无认证 MCP 桥 RCE（CVE-2026-59726，CVSS 10.0）。企业端 Pillar/Koi/Defender 全闭源按席位收费；开源侧已有扫描器、小 firewall（Top 1,616★），以及 agentperms/agent-policy-gateway 等同构先行者（echo2 task4 补查）。需求已强验证；供给无头部，但已有先行者，需靠“收据/跨 harness”差异化。
 
 **竞争**：`hardenrun/aif` 1,616★、`denoland/clawpatrol` 1,089★、`pipelock` 938★、`cordum` 511★；`agent firewall` 总共仅 14 个 >100★。MCP gateway 有 `Bifrost` 9k、`open-connector` 6k、`IBM/mcp-context-forge` 4.7k，但它们是“连接/路由”，不是“按 agent 身份限权”。闭源厂商强在企业销售，弱在开源社区与本地-first。
 
@@ -104,7 +104,7 @@
 
 **是什么**：一个 agent-native 的视频编辑层。时间线是结构化 JSON（clip/track/keyframe/effect），agent 通过 MCP/REST 读写；渲染可复现（同输入同输出）；支持素材索引、字幕、转场、音频；本地优先。人类用 GUI 微调，agent 用工具批量操作，二者编辑同一条真实时间线。
 
-**为什么现在**：视频生成 139 个 >300★，Top 1.85 万（Toonflow）、1.6 万（Duix）、1.27 万（ViMax）；视频编辑器 7 个 >500★，Top 1.46 万（palmier）、2.5k（OpenChatCut）、1.4k（openfilm）。供给在“生成”端很热，但“agent 可操作的编辑时间线”仍早期；openfilm 的“把 coding agent 变成 video agent”方向已验证有需求。老板的视频/多模态背景是差异化优势。
+**为什么现在**：视频生成 139 个 >300★，Top 1.85 万（Toonflow）、1.6 万（Duix）、1.27 万（ViMax）；视频编辑器 7 个 >500★，Top 1.46 万（palmier）、2.5k（OpenChatCut）、1.4k（openfilm）。供给在“生成”端很热，但“agent 可操作的编辑时间线”仍早期；openfilm 的“把 coding agent 变成 video agent”方向已验证有需求。差异化优势来自低竞争与可复现工程，不依赖个人背景。
 
 **竞争**：palmier（macOS AI editor，1.46 万）、OpenChatCut（local-first 对话剪辑，2.5k）、openfilm（agent video，1.4k）、Gausian（Rust local editor，1k）。差异：**agent-first 的结构化时间线 + 可复现渲染 + 跨工具协议**，不是“聊天框生成视频”。
 
@@ -122,7 +122,7 @@
 
 **是什么**：面向 world model / video generation / 机器人策略评估的基础设施。提供标准化任务与数据集卡片、可复现的推理/评估 runner、多维度指标（物理一致性、长程一致性、动作可控性、身份/场景保持）、模型提交与排行榜、公开的 video comparison。目标不是“又一个 benchmark 脚本”，而是“研究者愿意提交、读者愿意看榜”的公共设施。
 
-**为什么现在**：world model 162 个 >300★，但 Top 仅 1.7 万（Cosmos）；world-model eval 19 个 >100★，Top 2,264★（stable-worldmodel）、1,141★（giga-world）、321★（WorldFoundry）；video benchmark 19 个 >200★，Top 4,459★（lmms-eval）。**低竞争、低星数、高专业壁垒**。老板的集群与视频模型背景，是别人没有的牌。
+**为什么现在**：world model 162 个 >300★，但 Top 仅 1.7 万（Cosmos）；world-model eval 19 个 >100★，Top 2,264★（stable-worldmodel）、1,141★（giga-world）、321★（WorldFoundry）；video benchmark 19 个 >200★，Top 4,459★（lmms-eval）。**低竞争、低星数、高专业壁垒**。低竞争与可复现工程是主要机会；不假设个人背景。
 
 **竞争**：NVIDIA Cosmos（平台/模型）、lmms-eval（通用多模态 eval）、stable-worldmodel（可复现平台）、giga-world（机器人策略评估）、WorldFoundry（推理/评估基础设施）。差异：**世界模型专用指标 + 公开排行榜 + 可复现提交**，而不是通用 eval 或单个模型。
 
@@ -138,4 +138,4 @@
 
 1. **最像“我们”的项目不是又一个 agent，而是 agent 世界的“信任层”**：权限（#1）、供应链（#2）、验收（#3）、审计（#4）都在回答同一个问题——“agent 做的事，你敢信吗？” 这四个可以共享一套事件 schema/策略引擎，长期有机会合并成一个平台。
 2. **传播最强的是“恐惧 + 证明”**：DROP TABLE 被拦截、恶意 skill 被拦截、agent 说完成但数据库没变、录像被篡改后 verify 断链。都比“我们更快/更准”更适合 GitHub/HN。
-3. **老板优势最匹配的是 #7/#9**，但它们不是纯 star 最大化选项；建议作为“第二曲线”，不要压上全部筹码。
+3. **若未来明确投入视频/多模态资源，#7/#9 可作为第二曲线**；当前不假设老板背景，且 #9 已被排除。

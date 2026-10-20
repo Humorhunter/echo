@@ -11,7 +11,7 @@
 3. **安全/身份/供应链是热度与空位同时存在的少数区域。** `agent security` 217 个 >200★（Top 28.4 万，但 Top 10 中位数只有 1.68 万，说明头部是通用 harness，不是安全专品）；`agent firewall` 仅 14 个 >100★（Top 1,616★）；`sbom agent` 7 个 >50★；`prompt injection` 24 个 >200★。**需求已被 CVE 和事故验证，但开源“细粒度授权 + 审计 + 隔离”尚无头部。**
 4. **代码知识图谱/记忆/上下文工程已被验证，但高度饱和。** `knowledge graph` 45 个 >500★，Top 12.9 万，中位数 1.05 万（Graphify 12.9 万、Understand-Anything 8.7 万、codegraph 7.4 万）；`agent memory` 415 个 >200★；`context engineering` 37 个 >300★。除非有强楔子，不建议正面进入。
 5. **Computer-use 的“测试/QA”层是明显空位。** `computer use` 42 个 >300★，Top 3.0 万（`trycua/cua`）；但 `SpecOps`（ICSE'26 论文实现）6★、`desktest` 2★，测试框架层几乎没有星。**基础设施已有（cua/Cua-Bench/MCPWorld），缺“把 agent 轨迹变成可回归 CI 测试”的产品。**
-6. **视频/世界模型是“低竞争、低当前星数、高专业壁垒”的长期选项。** `video generation` 139 个 >300★，Top 1.85 万；`video benchmark` 19 个 >200★，Top 4,459★；`world model evaluation` 19 个 >100★，Top 2,264★。星数天花板明显低于 agent 赛道，但老板的集群与视频背景是别人没有的牌，适合做“研究者基础设施 + 排行榜”的长期品牌。
+6. **视频/世界模型是“低竞争、低当前星数、高专业壁垒”的长期选项。** `video generation` 139 个 >300★，Top 1.85 万；`video benchmark` 19 个 >200★，Top 4,459★；`world model evaluation` 19 个 >100★，Top 2,264★。星数天花板明显低于 agent 赛道，但低竞争与可复现工程适合做“研究者基础设施 + 排行榜”的长期品牌。
 7. **local-first 搜索/记忆应淘汰。** `local_first` 285 个 >500★，Top 10.3 万、中位数 4.2 万；`agent memory` 415 个 >200★；`rag` 358 个 >500★。需求真，但供给更卷，双人文团队没有胜算。
 
 ## 1. 数据表（节选）
@@ -88,7 +88,7 @@
 ### 2.5 视频/世界模型：星数低，但竞争也低
 
 视频生成 Top 1.85 万、视频 benchmark Top 4,459、world-model eval Top 2,264。对比 agent skills 的 30 万，天花板差一个数量级。
-**含义**：如果目标是“纯 star 最大化”，视频不是最优；如果目标是“老板优势 + 长期研究品牌 + 可多轮打磨”，它是唯一有结构性优势的赛道。
+**含义**：如果目标是“纯 star 最大化”，视频不是最优；如果目标是“长期研究品牌 + 可多轮打磨”，它是可考虑的第二曲线，但不依赖个人背景。
 
 ## 3. 需求 × 供给矩阵（与 echo2 合并用）
 

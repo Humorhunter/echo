@@ -33,6 +33,7 @@
 - 纠错用新条目开头 `[更正]`，不改旧文。
 - 需要对方立即处理时，可在对方 tmux 会话发一行提示（`tmux send-keys -t echo2`），提示内容只写“请读 logs/... 末尾并回应”，不复述正文，避免双通道信息不一致。
 - **默认邮箱**：需要明确回执的 `ASK` / `ACK` / `ERROR` 默认走 `scripts/msg.py`（task3 起），规则见 `conventions/messaging.md`；`logs/` 始终是事实来源，邮箱不得成为唯一证据。
+- **日志创建也必须追加**：禁止对 `logs/*.md` 使用 Write / `>` / `cat >` 等截断写，即使文件“看起来不存在”。统一用 `python3 scripts/log_append.py <path> --from echo1|echo2`（O_APPEND + flock + 自动序号），或先 `test -e` 再只用 `>>`。两人同时启动时，先读末尾/检查存在性，再追加；覆盖他人条目按 §ERROR 记录并补录。
 
 ## 4. 一轮工作流
 
