@@ -25,6 +25,7 @@
 | --- | --- | --- |
 | `the_twins.txt` | 双子座与 Castor / Pollux 的天文简介 | 员工英文名来源 |
 | `西京杂记（选）.txt` | “嚣 / 良”兄弟的典故 | 员工中文名来源 |
+| `agent-communication.md` | agent 间通信编码的调研笔记与设计结论 | 指导交流协议与 `msg.py` 的设计 |
 
 ## 命名建议
 
