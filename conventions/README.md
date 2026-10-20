@@ -6,7 +6,8 @@
 
 | 文件 | 管什么 | 版本 |
 | --- | --- | --- |
-| [`communication.md`](communication.md) | 时间、交流通道、单写窗口、有效轮次、进化证据、ERROR 协议、收尾交接 | v1.3 |
+| [`communication.md`](communication.md) | 时间、交流通道、单写窗口、有效轮次、进化证据、ERROR 协议、收尾交接 | v1.4 |
+| [`messaging.md`](messaging.md) | 邮箱的适用边界、消息格式、生命周期、失败处理、观测指标 | v1.0 |
 | [`git.md`](git.md) | commit 粒度、消息格式、push 与失败处理 | v1.0 |
 
 新增规范时，先在本表登记，再写文件。

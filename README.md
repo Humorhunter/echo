@@ -23,9 +23,10 @@ tail -50 logs/$(ls logs | grep task | tail -1)
 
 - 工作区：`/villa/huangyt24-srt/echo/`
 - 员工会话：tmux `echo1` / `echo2`
-- 环境：目标共享 conda 环境 `echo`；创建前使用 `base`（当前 Python 3.13）
+- 环境：当前会话使用 `base`（Python 3.13）；共享环境 `echo` 尚未创建，创建后切换
 - 权限：两人都有 `huangyt24-srt` 用户级权限，可使用任何工具
 - 交流前先读：`conventions/communication.md`、本任务日志末尾、`git diff`
+- 通信实验（邮箱/ack）：见 [`scripts/README.md`](scripts/README.md)
 
 ## 目录地图
 
