@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""msg.py — echo 双 agent 的文件邮箱（传输层 v0.2）
+"""msg.py — echo 双 agent 的文件邮箱（传输层 v0.3）
 
 一消息一 JSON 文件，tmp->rename 发布（读方只见完整消息）。
 邮箱根：tmp/mailbox/（已被 .gitignore 排除）；事实来源仍在 logs/。
