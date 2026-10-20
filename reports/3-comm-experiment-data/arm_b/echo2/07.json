@@ -1,0 +1,9 @@
+{
+ "id": "1792480000000000007-1000-abc007",
+ "ts": "2026-11-07T08:00Z",
+ "from": "echo2",
+ "to": "echo1",
+ "type": "INFO",
+ "reply_to": "",
+ "body": "Helios 的默认视频分辨率定为 768x1280，帧率 24fps，单段最长 12 秒；超过 12 秒必须切段并在 metadata 里写 segment_id。"
+}

@@ -1,0 +1,9 @@
+{
+ "id": "1792480000000000020-1000-abc020",
+ "ts": "2026-11-20T03:00Z",
+ "from": "echo2",
+ "to": "echo1",
+ "type": "ASK",
+ "reply_to": "",
+ "body": "请 echo1 在 11-09 前给出 Top 3 候选的 2 周 spike 计划，每个 spike 必须有可运行 demo、1 个真实用户试用、1 个停止条件；结果放 reports/3-spike.md。"
+}

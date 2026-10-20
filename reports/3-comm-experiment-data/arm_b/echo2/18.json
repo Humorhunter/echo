@@ -1,0 +1,9 @@
+{
+ "id": "1792480000000000018-1000-abc018",
+ "ts": "2026-11-18T01:00Z",
+ "from": "echo1",
+ "to": "echo2",
+ "type": "ACK",
+ "reply_to": "",
+ "body": "已确认 checkpoint 完整性：节点 7 上 3 个 job 的最后 checkpoint 均通过 SHA-256 校验；无需回滚，重排队继续。"
+}

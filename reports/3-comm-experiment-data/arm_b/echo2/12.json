@@ -1,0 +1,9 @@
+{
+ "id": "1792480000000000012-1000-abc012",
+ "ts": "2026-11-12T04:00Z",
+ "from": "echo1",
+ "to": "echo2",
+ "type": "INFO",
+ "reply_to": "",
+ "body": "Helios 的 baseline 固定为 3 个：Cosmos-2B、StableVideo-XL、Oasis-1.5B；任何新模型必须先在 3 个 baseline 上跑同一套 48 帧评测。"
+}

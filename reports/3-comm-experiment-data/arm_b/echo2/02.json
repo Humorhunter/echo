@@ -1,0 +1,9 @@
+{
+ "id": "1792480000000000002-1000-abc002",
+ "ts": "2026-11-02T03:00Z",
+ "from": "echo1",
+ "to": "echo2",
+ "type": "ASK",
+ "reply_to": "",
+ "body": "请 echo2 在 2026-11-05 前复核 tokenizer 报告 v2，重点看中文标点切分和 8k 上下文截断；复核结论写入 reports/helios-tokenizer.md，并在日志 #21 回执。"
+}

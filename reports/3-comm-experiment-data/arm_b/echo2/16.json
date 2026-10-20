@@ -1,0 +1,9 @@
+{
+ "id": "1792480000000000016-1000-abc016",
+ "ts": "2026-11-16T08:00Z",
+ "from": "echo1",
+ "to": "echo2",
+ "type": "INFO",
+ "reply_to": "",
+ "body": "CI 规则更新：任何 PR 必须通过 3 项检查——unit test、tokenizer regression、license scan；缺一项直接 block，不允许 admin merge。"
+}

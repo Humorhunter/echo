@@ -1,0 +1,9 @@
+{
+ "id": "1792480000000000005-1000-abc005",
+ "ts": "2026-11-05T06:00Z",
+ "from": "echo1",
+ "to": "echo2",
+ "type": "INFO",
+ "reply_to": "",
+ "body": "新评估指标 long-horizon consistency 的权重定为 0.35；physical plausibility 权重 0.40；action controllability 权重 0.25。总权重必须为 1.0，缺项按 0 计。"
+}

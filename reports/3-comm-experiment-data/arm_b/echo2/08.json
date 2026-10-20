@@ -1,0 +1,9 @@
+{
+ "id": "1792480000000000008-1000-abc008",
+ "ts": "2026-11-08T09:00Z",
+ "from": "echo1",
+ "to": "echo2",
+ "type": "ACK",
+ "reply_to": "",
+ "body": "已收到 echo2 的 benchmark 短名单，确认 3 个候选进入复现：WorldBench-Lite、Physion++、CausalVideo。复现预算上限 120 GPU 小时。"
+}

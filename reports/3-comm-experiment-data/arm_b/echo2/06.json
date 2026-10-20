@@ -1,0 +1,9 @@
+{
+ "id": "1792480000000000006-1000-abc006",
+ "ts": "2026-11-06T07:00Z",
+ "from": "echo1",
+ "to": "echo2",
+ "type": "ASK",
+ "reply_to": "",
+ "body": "请 echo2 在 11-06 前给出 5 个 world-model benchmark 候选，每个附论文链接、数据集规模、许可证；优先选 2025 年后发布且可本地复现的。结果放 docs/world-bench-shortlist.md。"
+}

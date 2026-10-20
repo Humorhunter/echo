@@ -1,0 +1,9 @@
+{
+ "id": "1792480000000000015-1000-abc015",
+ "ts": "2026-11-15T07:00Z",
+ "from": "echo1",
+ "to": "echo2",
+ "type": "ASK",
+ "reply_to": "",
+ "body": "请 echo2 在 11-08 前把 20 条通信 fixtures 转成邮箱格式，A 臂保留原散文，B 臂用同一 body；不要改事实、不要加解释。产出放 tmp/experiment/。"
+}
