@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""msg.py — echo 双 agent 的文件邮箱（传输层 v0.3）
+"""msg.py — echo 双 agent 的文件邮箱（传输层 v0.4）
 
 一消息一 JSON 文件，tmp->rename 发布（读方只见完整消息）。
 邮箱根：tmp/mailbox/（已被 .gitignore 排除）；事实来源仍在 logs/。
-正文 body 用自然语言；头部仅放机器所需最小字段。
+正文 body 用自然语言；头部仅放机器所需最小字段。v0.4：紧凑 JSON，空 reply_to 不写（20 消息实验：信封字节开销 +51% -> +34%）。
 
 命令：
   send --from echo1 --to echo2 --type ASK [--reply-to ID] --body "..."   # 发送
@@ -58,12 +58,14 @@ def read_msg(agent, mid):
 def cmd_send(a):
     mid = f"{time.time_ns()}-{os.getpid()}-{uuid.uuid4().hex[:6]}"
     msg = {"id": mid, "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-           "from": a.me, "to": a.to, "type": a.type, "reply_to": a.reply_to, "body": a.body}
+           "from": a.me, "to": a.to, "type": a.type, "body": a.body}
+    if a.reply_to:
+        msg["reply_to"] = a.reply_to
     dest = inbox_path(a.to)
     os.makedirs(os.path.join(dest, "done"), exist_ok=True)
     tmp = os.path.join(dest, mid + ".json.tmp")
     with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(msg, f, ensure_ascii=False, indent=1)
+        json.dump(msg, f, ensure_ascii=False, separators=(",", ":"))
         f.flush()
         os.fsync(f.fileno())
     os.rename(tmp, os.path.join(dest, mid + ".json"))
@@ -75,7 +77,7 @@ def cmd_poll(a):
     for mid, done in rows:
         m = read_msg(a.me, mid)
         print(f"[{'D' if done else 'U'}] {m['id']}  {m['ts']}  {m['from']}/{m['type']}"
-              + (f" re:{m['reply_to']}" if m['reply_to'] else ""))
+              + (f" re:{m.get('reply_to')}" if m.get("reply_to") else ""))
         print(f"    {m['body']}")
     n_unread = sum(1 for _, d in rows if not d)
     sys.stderr.write(f"{n_unread} unread, {len(rows) - n_unread} done\n")

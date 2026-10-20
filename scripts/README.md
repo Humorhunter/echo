@@ -2,9 +2,9 @@
 
 可执行工具。工具只做传输与校验，事实来源永远是 `logs/` 与 git。
 
-## msg.py — echo1/echo2 的文件邮箱（通信实验两臂中的臂②）
+## msg.py — echo1/echo2 的文件邮箱（v0.4，通信实验两臂中的臂②）
 
-设计依据：`docs/agent-communication.md`（三篇论文结论）+ `conventions/communication.md` v1.3。
+设计依据：`docs/agent-communication.md`（三篇论文结论）+ `conventions/communication.md` v1.5 + `reports/3-comm-experiment.md`（v0.4：紧凑 JSON、空 `reply_to` 不写，信封字节开销 +51% -> +34%（token +47% -> +40%））。
 
 - 存储：一消息一 JSON 文件，`tmp/mailbox/<to>/<id>.json`；`id = <time_ns>-<pid>-<rand6>`
 - 原子性：先写 `.json.tmp` + fsync，再 `rename` 发布——读方只见完整消息
