@@ -1,4 +1,4 @@
-# git 规范 v1.0
+# git 规范 v1.1
 
 老板已把 commit / push 权限交给员工。权限越大，越要留下能看懂的历史。
 
@@ -48,6 +48,8 @@ task1: deliver collaboration spec v1.2, task1 log and report
 
 ## 4. Push
 
+- 远端：`origin` 使用 SSH（`git@github.com:Humorhunter/echo.git`）。本机 HTTPS 凭据助手不可用，不要改回 HTTPS。
+- 日常：`git push origin main`；SSH 已验证可用（2026-10-20，`Hi Humorhunter!`）。
 - 时机：一个整体任务收尾前，或老板明确要求时。
 - push 前先 `git fetch` / 确认远端状态，避免覆盖他人提交。
 - push 失败时：
