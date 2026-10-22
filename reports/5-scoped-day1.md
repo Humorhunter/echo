@@ -11,14 +11,18 @@
 - **审计收据**：JSONL + SHA-256 hash chain；`scoped audit verify` 能抓单条篡改；secret key 默认脱敏，长值截断。
 - **CLI**：`init` / `check` / `proxy` / `audit verify` / `audit tail`。
 - **Demo**：`python3 examples/demo.py` 展示“允许普通读、拦 `.env`、拦 `DROP TABLE`、允许 `SELECT`、审批 shell”，最后验证 5 张收据。
-- **文档**：`README.md`、`docs/threat-model.md`、`docs/receipts.md`；Apache-2.0 + NOTICE。
+- **真实文件系统 MCP server demo**：`python3 examples/demo_filesystem.py`，同一策略下允许普通读/写、拦 `.env`、server 自身拦目录穿越；4 张收据 verify。
+- **Claude Code hook**：`scoped hook claude` 读 Claude `PreToolUse` JSON，映射 Bash/Read/Write/Edit/MCP 工具，返回 allow/ask/deny；`examples/claude-settings.json` 可直接放项目 `.claude/settings.json`。无 Claude 二进制时用 fixture 测过。
+- **文档**：`README.md`、`docs/threat-model.md`、`docs/receipts.md`、`docs/claude-hook.md`；Apache-2.0 + NOTICE。
 
 ## 2. 验证结果
 
 ```text
-python3 -m unittest discover -s tests -v          -> 14/14 OK
+python3 -m unittest discover -s tests -v          -> 22/22 OK
 tests/adversarial/run.py (echo2)                  -> 3 PASS, exit 0
 examples/demo.py                                  -> 2 blocked, 3 allowed, 5 receipts verified
+examples/demo_filesystem.py                       -> 2 blocked (policy + server sandbox), 2 allowed, 4 receipts verified
+scoped hook claude (fixture)                      -> .env deny / src allow / Bash ask, 3 receipts verified
 ```
 
 Demo 实际输出：
@@ -44,7 +48,7 @@ OK: 5 receipts verified
 
 ## 4. 诚实边界
 
-- 只覆盖 **MCP stdio**；Claude Code 的 shell/文件调用还没接 `PreToolUse` hook，不能用“全拦截”宣传。
+- 已覆盖 **MCP stdio** 和 **Claude Code PreToolUse**；Codex/OpenCode 尚未接；不能用“全拦截”宣传。
 - **不是 sandbox**；允许的 MCP server 仍能读它能读的一切。
 - SQL 是关键词启发式，不是 parser；生产应配只读 DB role。
 - 审计链防编辑、不防整文件重写；外部锚定是后续工作。
@@ -52,12 +56,12 @@ OK: 5 receipts verified
 
 ## 5. 下一步（不等老板指令，按计划推进）
 
-1. 做 Claude Code `PreToolUse` hook 适配器：同一策略/收据引擎，先覆盖 shell 与文件路径。
-2. 用一个真实 stdio MCP server 做端到端 demo（优先 filesystem server），录 30 秒可复现命令。
-3. 把 `examples/demo.py` 变成 CI smoke test；补 batch/ask/tamper 的回归。
+1. 做 Codex/OpenCode 的 hook/配置适配（Claude Code 已接）。
+2. 做 `PostToolUse` 收据，记录 `ask` 的最终批准/拒绝结果。
+3. 把 `examples/demo.py` / `demo_filesystem.py` 变成 CI smoke test；补 batch/ask/tamper 回归。
 4. 再做 HTTP egress allowlist 与 Postgres 只读 adapter；外部收据锚定放最后。
 
 ## 6. 需要老板看的
 
-- 项目在 `scoped/`，可直接跑：`cd scoped && python3 examples/demo.py`。
+- 项目在 `scoped/`，可直接跑：`cd scoped && python3 examples/demo.py` 与 `python3 examples/demo_filesystem.py`；Claude hook 见 `docs/claude-hook.md`。
 - 目前没有要老板决策的阻塞项；按“至少完成整个项目、要有用”继续，不追 star 叙事。

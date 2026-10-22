@@ -4,7 +4,7 @@ audit = ".demo/audit.jsonl"
 
 [[rules]]
 name = "deny-secret-paths"
-tool = "read_file"
+tool = "*"
 decision = "deny"
 [rules.match.regex]
 path = '(?i)(^|/)(\.env(\..*)?|\.ssh(/.*)?|credentials(\..*)?|authorized_keys|id_rsa|id_ed25519|\.aws/credentials)$'
@@ -27,6 +27,11 @@ tool = "run_sql"
 decision = "allow"
 [rules.match]
 sql_verbs = ["select"]
+
+[[rules]]
+name = "ask-writes"
+tool = "write_file"
+decision = "ask"
 
 [[rules]]
 name = "ask-shell"

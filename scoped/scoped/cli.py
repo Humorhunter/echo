@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .approval import Approver
 from .audit import AuditLog
+from .hooks import claude_pre_tool_use, invalid_payload
 from .policy import PolicyError, load_policy
 from .proxy import run_proxy
 
@@ -30,7 +31,7 @@ sql_verbs = ["select"]
 
 [[rules]]
 name = "deny-secret-paths"
-tool = "read_file"
+tool = "*"
 decision = "deny"
 [rules.match.regex]
 path = '(?i)(^|/)(\.env(\..*)?|\.ssh(/.*)?|credentials(\..*)?|authorized_keys|id_rsa|id_ed25519|\.aws/credentials)$'
@@ -39,6 +40,11 @@ path = '(?i)(^|/)(\.env(\..*)?|\.ssh(/.*)?|credentials(\..*)?|authorized_keys|id
 name = "allow-file-read"
 tool = "read_file"
 decision = "allow"
+
+[[rules]]
+name = "ask-writes"
+tool = "write_file"
+decision = "ask"
 
 [[rules]]
 name = "ask-shell"
@@ -124,6 +130,25 @@ def cmd_proxy(args) -> int:
     return run_proxy(policy=policy, server=server, audit_path=audit_path, approver=approver)
 
 
+def cmd_hook_claude(args) -> int:
+    raw = sys.stdin.read()
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        print(json.dumps(invalid_payload(f"invalid hook JSON: {exc}"), ensure_ascii=False))
+        return 0
+    if not isinstance(payload, dict):
+        print(json.dumps(invalid_payload("hook payload must be an object"), ensure_ascii=False))
+        return 0
+    try:
+        policy, audit_path = _load(args)
+        output = claude_pre_tool_use(payload, policy, AuditLog(audit_path))
+    except Exception as exc:
+        output = invalid_payload(f"hook failed closed: {exc}")
+    print(json.dumps(output, ensure_ascii=False))
+    return 0
+
+
 def cmd_audit_verify(args) -> int:
     log = AuditLog(args.file)
     if not log.path.exists():
@@ -177,6 +202,13 @@ def build_parser() -> argparse.ArgumentParser:
     group.add_argument("--deny-ask", action="store_true", help="auto-deny every ask decision")
     proxy.add_argument("server", nargs=argparse.REMAINDER, help="-- <server command>")
     proxy.set_defaults(func=cmd_proxy)
+
+    hook = sub.add_parser("hook", help="agent hook adapters")
+    hook_sub = hook.add_subparsers(dest="hook_command", required=True)
+    claude = hook_sub.add_parser("claude", help="Claude Code PreToolUse hook (reads JSON on stdin)")
+    claude.add_argument("--policy", default="scoped.toml")
+    claude.add_argument("--audit", default=None)
+    claude.set_defaults(func=cmd_hook_claude)
 
     audit = sub.add_parser("audit", help="inspect audit receipts")
     audit_sub = audit.add_subparsers(dest="audit_command", required=True)

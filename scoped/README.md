@@ -8,7 +8,7 @@ Scoped sits between an MCP client (Claude Code, Codex, OpenCode, or your own age
 
 It returns **allow / ask / deny**, asks a human when needed, and writes a hash-chained **receipt** for every decision. It is a local-first developer tool — not a sandbox, not a network firewall, and not a security guarantee.
 
-Status: **v0.1 MVP, working MCP stdio proxy.** Claude Code/Codex hook adapters are next; the proxy already works with any stdio MCP server.
+Status: **v0.1 MVP.** Working MCP stdio proxy + Claude Code `PreToolUse` hook adapter. Codex/OpenCode snippets and shell/HTTP/Postgres adapters are next.
 
 ## Why
 
@@ -35,14 +35,45 @@ scoped proxy --policy scoped.toml -- <your-mcp-server-command>
 
 `scoped init` creates `scoped.toml` and `.scoped/` (audit logs are gitignored). Edit the policy, then wrap the server your agent already uses. The client speaks normal MCP JSON-RPC; Scoped forwards everything except calls it blocks.
 
-### Run the demo
+### Run the demos
 
 ```bash
 cd scoped
-python3 examples/demo.py
+python3 examples/demo.py            # fake MCP server: policy decisions + receipts
+python3 examples/demo_filesystem.py # real filesystem MCP server: read/write/deny + sandbox escape
 ```
 
-Expected: normal file read allowed, `.env` read blocked, `DROP TABLE` blocked, `SELECT` allowed, `shell` allowed only because the demo passes `--approve`; the audit chain verifies.
+Expected for the filesystem demo: `src/main.py` read allowed, `.env` blocked by policy, `../../README.md` blocked by the server's own sandbox, generated write allowed after `--approve`; 4 receipts verify.
+
+### Claude Code hook
+
+Add to `.claude/settings.json` in your project (see `examples/claude-settings.json`):
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Read|Write|Edit|MultiEdit|WebFetch|mcp__.*",
+        "hooks": [
+          {"type": "command", "command": "scoped hook claude --policy scoped.toml"}
+        ]
+      }
+    ]
+  }
+}
+```
+
+The hook maps Claude tools to policy tools (`Bash`→`shell`, `Read`→`read_file`, `Write`/`Edit`→`write_file`, `mcp__server__tool`→`server.tool`) and returns `allow` / `ask` / `deny`. `ask` uses Claude Code's own approval UI. Every decision is receipted.
+
+Test without Claude Code:
+
+```bash
+printf '%s\n' '{"tool_name":"Read","tool_input":{"file_path":".env"}}' | scoped hook claude --policy scoped.toml
+# {"hookSpecificOutput": {"permissionDecision": "deny", ...}}
+```
+
+See `docs/claude-hook.md` for behavior and limits.
 
 ### Verify receipts
 
@@ -123,11 +154,12 @@ python3 -m unittest discover -s tests -v
 TMPDIR="$PWD/tests/.tmp" PYTHONPATH="$PWD" python3 tests/adversarial/run.py
 ```
 
-The adversarial suite covers batch frames, secret-path bypass, SQL comment obfuscation, audit tamper detection, and secret redaction.
+22 unit/integration tests plus echo2's 3-case adversarial suite: batch frames, secret-path bypass, SQL comment obfuscation, audit tamper detection, secret redaction, Claude hook mapping, and a real filesystem MCP server.
 
 ## Roadmap (concrete, not commitments)
 
-- Claude Code `PreToolUse` hook adapter and Codex/OpenCode config snippets.
+- Codex/OpenCode config snippets (the Claude Code `PreToolUse` adapter is in `scoped hook claude`).
+- PostToolUse outcome receipts (so an `ask` receipt can record the final allow/deny).
 - Shell command wrapper with an allowlist and approval, sharing the same policy/audit engine.
 - HTTP egress allowlist and Postgres read-only adapter.
 - External append-only receipt anchor (e.g., GitHub release/asset or a user-provided sink).
